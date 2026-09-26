@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#e7e7ea">
+  <title>CONVERSE 2K26 | Mobile Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0d0d0d;
+      --paper: #e7e7ea;
+      --white: #fff;
+      --blue: #075bc2;
+      --deep-blue: #063ba5;
+      --yellow: #ffd400;
+      --red: #cf1807;
+      --line: 3px solid var(--ink);
+      --shadow: 5px 5px 0 var(--ink);
+      --display: "Chakra Petch", system-ui, sans-serif;
+      --body: "Lexend", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      overflow-x: hidden;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: var(--body);
+    }
+    button, a { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; text-decoration: none; }
+
+    .page {
+      position: relative;
+      min-height: 100svh;
+      padding: 16px 16px 64px;
+      isolation: isolate;
+    }
+    .bricks {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: .68;
+      filter: blur(1.5px);
+    }
+    .brick {
+      position: absolute;
+      width: 58px;
+      height: 28px;
+      border-radius: 4px;
+      box-shadow: inset 0 2px rgba(255,255,255,.3), inset 0 -3px rgba(0,0,0,.26), 0 8px 10px rgba(0,0,0,.22);
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+    .brick::before {
+      content: "";
+      position: absolute;
+      inset: -5px 0 auto;
+      height: 10px;
+      background: radial-gradient(circle, currentColor 0 4px, transparent 4.5px) 0 0 / 20px 10px repeat-x;
+      color: inherit;
+      opacity: .95;
+    }
+    .brick.yellow { color: #d5ae00; background: linear-gradient(145deg, #fff08a, #ffd700 45%, #b99700); }
+    .brick.blue { color: #064995; background: linear-gradient(145deg, #61a3ff, #075bc2 48%, #003675); }
+    .brick.red { color: #a31409; background: linear-gradient(145deg, #f26454, #c91a09 48%, #851006); }
+    .brick.black { color: #111; background: linear-gradient(145deg, #666, #1b1b1b 52%, #000); }
+    .b1 { left: 4%; top: 26%; transform: rotate(-18deg); }
+    .b2 { left: 78%; top: 20%; transform: rotate(18deg) scale(.85); animation-delay: -2s; }
+    .b3 { left: 13%; top: 63%; transform: rotate(24deg) scale(.8); animation-delay: -4s; }
+    .b4 { left: 73%; top: 73%; transform: rotate(-11deg); animation-delay: -5s; }
+    .b5 { left: 45%; top: 45%; transform: rotate(-8deg) scale(.75); animation-delay: -1s; }
+    .b6 { left: 88%; top: 47%; transform: rotate(-27deg) scale(.7); animation-delay: -3s; }
+    @keyframes drift { to { translate: 0 18px; rotate: 5deg; } }
+
+    .topbar {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 2px 0 0;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 10px 15px;
+      border: var(--line);
+      border-radius: 5px;
+      box-shadow: 3px 3px 0 var(--ink);
+      cursor: pointer;
+      font-family: var(--display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    .button:hover { transform: translate(-1px, -2px); box-shadow: 5px 5px 0 var(--ink); }
+    .button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+    .button.blue { color: var(--white); background: var(--blue); }
+    .button.yellow { background: var(--yellow); }
+    .button.white { background: var(--white); }
+    .button .arrow { margin-left: 7px; font-size: 17px; line-height: 0; }
+
+    .view { max-width: 1000px; margin: 0 auto; }
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 0 38px;
+      text-align: center;
+    }
+    .logo {
+      width: min(190px, 44vw);
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 9px 7px rgba(0,0,0,.27));
+    }
+    h1, h2, h3 { margin: 0; font-family: var(--display); }
+    h1 {
+      margin-top: 9px;
+      color: #003399;
+      font-size: clamp(38px, 11vw, 76px);
+      font-weight: 700;
+      letter-spacing: .06em;
+      line-height: .98;
+      text-shadow: 3px 3px 0 rgba(0,0,0,.15);
+    }
+    .tagline {
+      margin: 18px 0 16px;
+      color: rgba(13,13,13,.8);
+      font-size: clamp(15px, 4.4vw, 20px);
+    }
+    .theme {
+      width: min(100%, 480px);
+      padding: 12px 14px;
+      border: var(--line);
+      border-radius: 4px;
+      background: var(--ink);
+      box-shadow: 4px 4px 0 rgba(13,13,13,.35);
+      color: var(--yellow);
+      font-family: var(--display);
+      font-size: clamp(11px, 3.1vw, 14px);
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      margin: 2px 0 66px;
+    }
+    .stat {
+      position: relative;
+      min-height: 118px;
+      padding: 30px 18px 18px;
+      border: var(--line);
+      border-radius: 4px;
+      box-shadow: 6px 7px 0 rgba(13,13,13,.8);
+      text-align: center;
+    }
+    .stat::before {
+      content: "";
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      width: 88px;
+      height: 18px;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, currentColor 0 6px, var(--ink) 6.5px 8px, transparent 8.5px) 0 0 / 25px 18px repeat-x;
+      color: var(--ink);
+    }
+    .stat.blue { color: var(--white); background: var(--blue); }
+    .stat.yellow { background: var(--yellow); }
+    .stat.red { color: var(--white); background: var(--red); }
+    .stat h2 { font-size: clamp(16px, 2vw, 21px); letter-spacing: .03em; }
+    .stat p { margin: 10px 0 0; font-size: 14px; line-height: 1.45; }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      justify-content: center;
+      margin: 0 0 28px;
+      font-size: clamp(22px, 4vw, 32px);
+      letter-spacing: .045em;
+      text-align: center;
+    }
+    .section-title::before, .section-title::after {
+      content: "";
+      width: 52px;
+      height: 2px;
+      background: rgba(13,13,13,.16);
+    }
+    .sponsors {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      padding-bottom: 18px;
+    }
+    .sponsor {
+      position: relative;
+      display: flex;
+      min-height: 160px;
+      align-items: center;
+      justify-content: center;
+      padding: 26px 16px 18px;
+      border: 1px solid var(--ink);
+      border-top: 4px solid var(--accent);
+      border-radius: 10px;
+      background: var(--white);
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 700;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .sponsor::before, .sponsor::after {
+      content: "";
+      position: absolute;
+      top: 9px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .sponsor::before { left: 13px; }
+    .sponsor::after { left: 29px; }
+    .sponsor:hover { transform: translateY(-4px); box-shadow: 4px 5px 0 rgba(13,13,13,.25); }
+
+    .subpage-wrap {
+      max-width: 760px;
+      margin: 12px auto 0;
+    }
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 30px;
+      color: rgba(13,13,13,.65);
+      font-family: var(--display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .panel {
+      border: var(--line);
+      background: var(--white);
+      box-shadow: 8px 8px 0 rgba(13,13,13,.85);
+    }
+    .about-panel { padding: 34px clamp(22px, 7vw, 52px) 40px; text-align: center; }
+    .about-panel .logo { width: 100px; }
+    .about-panel h2 { margin-top: 12px; font-size: clamp(36px, 10vw, 52px); }
+    .yellow-rule { width: 64px; height: 4px; margin: 22px auto 34px; background: var(--yellow); }
+    .about-panel .lead { color: var(--blue); font-family: var(--display); font-size: 18px; font-weight: 700; line-height: 1.45; }
+    .about-panel p:not(.lead) { margin: 26px auto 0; max-width: 600px; color: rgba(13,13,13,.78); font-size: 15px; line-height: 1.75; text-align: left; }
+    .connect { margin-top: 38px; padding-top: 28px; border-top: 2px dashed rgba(13,13,13,.14); }
+    .connect h3 { font-size: 14px; letter-spacing: .1em; }
+    .socials { display: flex; justify-content: center; gap: 12px; margin-top: 17px; }
+    .socials a { padding: 10px 15px; border: 2px solid var(--ink); border-radius: 4px; background: var(--paper); font-family: var(--display); font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+
+    .login-screen { display: grid; min-height: calc(100svh - 50px); place-items: center; padding: 20px 0 30px; }
+    .login-card { width: min(100%, 450px); padding: 18px 26px 30px; border: var(--line); background: var(--deep-blue); box-shadow: 7px 8px 0 rgba(13,13,13,.85); color: var(--white); text-align: center; }
+    .login-card .back { display: flex; margin-bottom: 18px; color: rgba(255,255,255,.75); text-align: left; }
+    .login-card .logo { width: 112px; }
+    .tech-label { display: inline-block; margin: 18px 0 14px; padding: 5px 12px; border: var(--line); border-radius: 3px; background: var(--yellow); color: var(--ink); font-family: var(--display); font-size: 11px; font-weight: 700; letter-spacing: .12em; }
+    .login-card h2 { font-size: clamp(30px, 8vw, 42px); letter-spacing: .08em; }
+    .login-card .login-subtitle { margin: 8px 0 30px; color: rgba(255,255,255,.7); font-size: 14px; }
+    .google-button { width: 100%; min-height: 56px; gap: 10px; font-size: 14px; }
+    .google-mark { color: #4285f4; font-family: Arial, sans-serif; font-size: 24px; font-weight: 700; }
+    .login-hint { margin: 26px 0 0; color: rgba(255,255,255,.48); font-family: var(--display); font-size: 11px; letter-spacing: .15em; }
+    .auth-topbar { justify-content: flex-start; align-items: center; gap: 6px; margin: 0 auto; padding: 7px; border: var(--line); border-radius: 6px; background: linear-gradient(90deg, #06409c, #075bc2); box-shadow: 5px 6px 0 rgba(13,13,13,.8); }
+    .auth-logo { display: inline-flex; align-items: center; gap: 8px; margin: 0 8px 0 3px; color: var(--white); font-family: var(--display); font-size: 12px; font-weight: 700; letter-spacing: .12em; white-space: nowrap; }
+    .auth-logo img { width: 35px; height: 30px; object-fit: contain; }
+    .auth-link { min-height: 38px; padding: 8px 13px; border: 2px solid var(--ink); border-radius: 4px; background: #062d74; color: var(--white); box-shadow: 2px 2px 0 var(--ink); font-size: 11px; }
+    .auth-link.active { background: var(--yellow); color: var(--ink); }
+    .auth-main { padding: 26px 0 0; }
+    .auth-heading { margin-bottom: 22px; }
+    .auth-heading .eyebrow { display: inline-block; margin-bottom: 10px; padding: 7px 11px; border: 2px solid var(--ink); border-radius: 4px; background: var(--yellow); box-shadow: 2px 2px 0 var(--ink); font-family: var(--display); font-size: 11px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; }
+    .auth-heading h1 { margin: 0; color: var(--ink); font-size: clamp(34px, 9vw, 58px); letter-spacing: .035em; text-shadow: none; }
+    .auth-heading p { max-width: 640px; margin: 9px 0 0; color: rgba(13,13,13,.7); font-size: 14px; line-height: 1.55; }
+    .dashboard-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 20px; align-items: start; }
+    .dashboard-hero { min-height: 385px; padding: 24px; border: var(--line); background: linear-gradient(135deg, #fff 0 73%, #e9edf6 73%); box-shadow: var(--shadow); }
+    .dashboard-hero .logo { width: 150px; }
+    .dashboard-hero h2 { max-width: 560px; margin: 10px 0 0; color: #003399; font-size: clamp(38px, 8vw, 68px); line-height: .9; letter-spacing: .05em; }
+    .dashboard-hero .hero-sub { margin: 16px 0 14px; font-family: var(--display); font-size: 18px; font-weight: 700; letter-spacing: .04em; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+    .badge { padding: 7px 10px; border: 2px solid var(--ink); border-radius: 4px; box-shadow: 2px 2px 0 var(--ink); font-family: var(--display); font-size: 10px; font-weight: 700; letter-spacing: .07em; }
+    .badge.yellow { background: var(--yellow); }
+    .badge.blue { background: #b7d2ff; color: #003399; }
+    .badge.red { background: #ffc4be; color: var(--red); }
+    .builder-chip { display: flex; align-items: center; gap: 10px; width: fit-content; margin: 20px 0; padding: 10px 12px; border: 2px solid var(--ink); border-radius: 5px; background: var(--white); box-shadow: 3px 3px 0 var(--ink); font-size: 13px; font-weight: 600; }
+    .builder-chip strong { color: var(--blue); font-family: var(--display); font-size: 10px; letter-spacing: .08em; }
+    .dashboard-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .dashboard-panel { padding: 20px; border: var(--line); border-radius: 6px; background: var(--white); box-shadow: var(--shadow); }
+    .dashboard-panel h2 { font-size: clamp(24px, 5vw, 34px); letter-spacing: .04em; }
+    .panel-copy { margin: 9px 0 16px; color: rgba(13,13,13,.67); font-size: 13px; line-height: 1.55; }
+    .progress-box { margin-bottom: 17px; padding: 14px; border: 2px solid var(--ink); border-radius: 5px; background: #fafafa; }
+    .progress-line { display: flex; align-items: center; justify-content: space-between; font-family: var(--display); font-size: 12px; font-weight: 700; letter-spacing: .07em; }
+    .progress-dots { display: flex; gap: 7px; margin-top: 12px; }
+    .progress-dots i { width: 10px; height: 10px; border: 1px solid var(--ink); border-radius: 50%; background: var(--paper); }
+    .progress-dots i.filled { background: var(--yellow); }
+    .track-tabs { display: flex; gap: 7px; margin: 12px 0 8px; }
+    .track-tab { flex: 1; padding: 8px 5px; border: 2px solid var(--ink); border-radius: 4px; background: #f7f7f7; font-family: var(--display); font-size: 10px; font-weight: 700; letter-spacing: .06em; cursor: pointer; }
+    .track-tab.active { background: var(--yellow); }
+    .mini-event { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(13,13,13,.14); font-size: 12px; }
+    .mini-event:last-child { border-bottom: 0; }
+    .mini-event strong { font-family: var(--display); font-size: 11px; }
+    .mini-event span { color: rgba(13,13,13,.6); font-family: var(--display); font-size: 10px; text-align: right; }
+    .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 20px; }
+    .feature-card { padding: 16px; border: var(--line); border-radius: 5px; background: var(--white); box-shadow: 3px 3px 0 rgba(13,13,13,.75); }
+    .feature-card h3 { font-size: 18px; }
+    .feature-card p { margin: 8px 0 0; color: rgba(13,13,13,.66); font-size: 12px; line-height: 1.5; }
+    .events-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; }
+    .filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0 22px; }
+    .filter { padding: 9px 12px; border: 2px solid var(--ink); border-radius: 4px; background: var(--white); box-shadow: 2px 2px 0 var(--ink); cursor: pointer; font-family: var(--display); font-size: 10px; font-weight: 700; letter-spacing: .08em; }
+    .filter.active { background: var(--yellow); }
+    .event-card { position: relative; display: flex; min-height: 285px; flex-direction: column; justify-content: space-between; padding: 18px; border: 4px solid var(--ink); border-radius: 6px; background: var(--white); box-shadow: 5px 5px 0 var(--ink); cursor: pointer; transition: transform .16s ease; }
+    .event-card:hover { transform: translateY(-3px); }
+    .event-card.registered { background: linear-gradient(155deg, #fff 0 82%, #fff3b0 82%); }
+    .event-top { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+    .event-number { color: rgba(13,13,13,.55); font-family: monospace; font-size: 11px; font-weight: 700; }
+    .event-track, .event-type { font-family: var(--display); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .event-track { padding: 5px 7px; border: 2px solid var(--ink); border-radius: 4px; background: var(--yellow); }
+    .event-type { color: rgba(13,13,13,.65); }
+    .event-card h3 { margin-top: 22px; font-size: 22px; letter-spacing: .03em; }
+    .event-card p { min-height: 48px; margin: 8px 0 15px; color: rgba(13,13,13,.7); font-size: 12px; line-height: 1.5; }
+    .reward { align-self: flex-start; padding: 8px 9px; border: 2px solid var(--ink); border-radius: 4px; background: #fff4ac; box-shadow: 2px 2px 0 var(--ink); font-family: var(--display); font-size: 10px; font-weight: 700; letter-spacing: .05em; }
+    .event-footer { display: flex; justify-content: space-between; margin-top: 18px; padding-top: 12px; border-top: 1px solid rgba(13,13,13,.16); font-family: var(--display); font-size: 10px; font-weight: 700; letter-spacing: .08em; }
+    .detail-card { max-width: 720px; margin: 24px auto 0; padding: 28px 20px 24px; border: var(--line); border-radius: 7px; background: var(--deep-blue); box-shadow: 7px 8px 0 rgba(13,13,13,.8); color: var(--white); text-align: center; }
+    .detail-card .back { display: flex; color: rgba(255,255,255,.75); text-align: left; }
+    .detail-logo { width: 145px; height: 105px; margin: 5px auto 16px; object-fit: contain; filter: drop-shadow(0 8px 4px rgba(0,0,0,.25)); }
+    .detail-card .eyebrow { color: rgba(255,255,255,.62); font-family: var(--display); font-size: 11px; font-weight: 700; letter-spacing: .14em; }
+    .detail-card h1 { margin-top: 10px; color: var(--white); font-size: clamp(34px, 9vw, 54px); text-shadow: none; }
+    .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; max-width: 370px; margin: 28px auto 22px; }
+    .countdown div { padding: 10px 5px; border: 1px solid rgba(255,255,255,.22); border-radius: 5px; background: rgba(0,0,0,.22); color: var(--yellow); font-family: var(--display); font-size: 22px; font-weight: 700; }
+    .countdown small { display: block; margin-top: 4px; color: rgba(255,255,255,.55); font-size: 8px; letter-spacing: .08em; }
+    .detail-meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; margin: 15px 0 25px; }
+    .detail-meta span { padding: 8px 10px; border: 1px solid rgba(255,255,255,.18); border-radius: 20px; background: rgba(0,0,0,.2); color: rgba(255,255,255,.72); font-family: var(--display); font-size: 10px; font-weight: 700; letter-spacing: .05em; }
+    .detail-copy { padding: 20px 0 0; border-top: 1px solid rgba(255,255,255,.16); color: rgba(255,255,255,.78); font-size: 13px; line-height: 1.65; text-align: left; }
+    .detail-actions { display: flex; gap: 9px; margin-top: 22px; }
+    .detail-actions .button { flex: 1; }
+    .profile-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 20px; align-items: start; }
+    .profile-card, .manifest-card { padding: 22px; border: var(--line); border-radius: 6px; background: var(--white); box-shadow: var(--shadow); }
+    .profile-head { display: flex; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid rgba(13,13,13,.15); }
+    .avatar { display: grid; width: 58px; height: 58px; place-items: center; border: 3px solid var(--ink); border-radius: 12px; background: var(--blue); color: var(--white); box-shadow: 3px 3px 0 var(--ink); font-family: var(--display); font-size: 27px; font-weight: 700; }
+    .profile-head h2 { font-size: 22px; }
+    .profile-head p { margin: 4px 0 0; color: rgba(13,13,13,.64); font-size: 12px; }
+    .track-label { display: inline-block; margin-top: 7px; padding: 5px 8px; border: 2px solid var(--ink); border-radius: 3px; background: var(--blue); color: var(--white); font-family: var(--display); font-size: 9px; font-weight: 700; letter-spacing: .1em; }
+    .profile-fields { display: grid; gap: 12px; margin-top: 18px; }
+    .profile-field label { display: block; margin-bottom: 5px; color: rgba(13,13,13,.58); font-family: var(--display); font-size: 10px; font-weight: 700; letter-spacing: .1em; }
+    .profile-field input { width: 100%; padding: 11px; border: 2px solid var(--ink); border-radius: 4px; background: #f7f7f8; color: var(--ink); font-size: 13px; }
+    .manifest-card h2 { font-size: 26px; }
+    .manifest-card > p { color: rgba(13,13,13,.62); font-size: 13px; line-height: 1.5; }
+    .manifest-empty { margin-top: 18px; padding: 25px 15px; border: 2px dashed rgba(13,13,13,.28); border-radius: 5px; text-align: center; }
+    .manifest-empty strong { display: block; font-family: var(--display); font-size: 15px; }
+    .manifest-empty span { display: block; margin-top: 9px; color: rgba(13,13,13,.6); font-size: 12px; line-height: 1.5; }
+    .manifest-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(13,13,13,.14); font-family: var(--display); font-size: 11px; font-weight: 700; }
+    .manifest-item span { color: var(--blue); }
+    .notice { position: fixed; right: 16px; bottom: 16px; z-index: 8; max-width: calc(100% - 32px); padding: 13px 15px; border: 2px solid var(--ink); border-radius: 5px; background: var(--yellow); box-shadow: 4px 4px 0 var(--ink); font-size: 13px; font-weight: 600; transform: translateY(150%); transition: transform .2s ease; }
+    .notice.show { transform: translateY(0); }
+
+    @media (max-width: 700px) {
+      .page { padding: 12px 12px 48px; }
+      .topbar { gap: 7px; }
+      .button { min-height: 42px; padding: 8px 10px; font-size: 11px; letter-spacing: .07em; }
+      .hero { padding-top: 28px; }
+      .logo { width: 154px; }
+      .stats { grid-template-columns: 1fr; gap: 20px; margin-bottom: 58px; }
+      .stat { min-height: 108px; padding-top: 28px; }
+      .sponsors { grid-template-columns: 1fr; gap: 17px; }
+      .sponsor { min-height: 124px; }
+      .section-title { gap: 8px; font-size: 22px; }
+      .section-title::before, .section-title::after { width: 25px; }
+      .subpage-wrap { margin-top: 10px; }
+      .about-panel { padding: 26px 19px 30px; }
+      .login-card { padding-left: 18px; padding-right: 18px; }
+      .auth-topbar { justify-content: flex-start; overflow-x: auto; }
+      .auth-logo { margin-right: 2px; font-size: 0; }
+      .auth-logo img { width: 34px; }
+      .auth-link { flex: 1 0 auto; }
+      .auth-main { padding-top: 20px; }
+      .dashboard-grid, .profile-grid { grid-template-columns: 1fr; }
+      .dashboard-hero { min-height: 0; padding: 20px; }
+      .dashboard-hero h2 { font-size: 48px; }
+      .feature-grid { grid-template-columns: repeat(2, 1fr); }
+      .events-list { grid-template-columns: 1fr; }
+      .event-card { min-height: 250px; }
+      .detail-card { margin-top: 14px; padding-left: 15px; padding-right: 15px; }
+      .profile-card, .manifest-card { padding: 18px; }
+    }
+    @media (max-width: 380px) {
+      .topbar { justify-content: stretch; }
+      .topbar .button { flex: 1; }
+      .theme { font-size: 10px; }
+      .login-card h2 { font-size: 27px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .dashboard-hero h2 { font-size: 42px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="bricks" aria-hidden="true">
+      <i class="brick yellow b1"></i><i class="brick black b2"></i><i class="brick blue b3"></i>
+      <i class="brick red b4"></i><i class="brick black b5"></i><i class="brick yellow b6"></i>
+    </div>
+    <header class="topbar" id="topbar"></header>
+    <main id="app" class="view"></main>
+    <div id="notice" class="notice" role="status"></div>
+  </div>
+  <script>
+    const logo = "https://tanstack-start-ts-desktop-comverse-2026-website.converse2k26.workers.dev/c-logo.png";
+    const sponsors = [["AI Matrix", "#c91a09"], ["CyberDefenders", "#e8b800"], ["CloudBricks", "#075bc2"], ["LogicForge", "#1b1b1b"]];
+    const profileKey = "converse-profile";
+    const savedProfile = JSON.parse(localStorage.getItem(profileKey) || "null");
+    let profile = savedProfile || { name: "Malhar Balar", phone: "9020119469", email: "malharbalar.aids25@scet.ac.in" };
+    let registered = new Set(JSON.parse(localStorage.getItem("converse-registered") || '["it-quiz"]'));
+    let authenticated = true;
+    let noticeTimer;
+    let editingProfile = false;
+    const app = document.querySelector("#app");
+    const topbar = document.querySelector("#topbar");
+    const notice = document.querySelector("#notice");
+    const events = [
+      { id: "it-quiz", no: "01", track: "IT TRACK", type: "SOLO", name: "IT QUIZ", desc: "Test your knowledge of information technology, programming, networking, and modern computing trends.", reward: "25 College Credits + Certificate", date: "SEP 17, 2026", time: "9:00 AM - 11:00 AM", venue: "Lab 301, IT Department" },
+      { id: "cyber-quiz", no: "02", track: "IT TRACK", type: "SOLO", name: "CYBER QUIZ", desc: "Put your cybersecurity and ethical hacking acumen to the test across cryptography and digital forensics.", reward: "30 College Credits + Certificate", date: "SEP 17, 2026", time: "11:30 AM - 1:30 PM", venue: "Cyber Lab, IT Department" },
+      { id: "py-it", no: "03", track: "IT TRACK", type: "SOLO", name: "PY-IT", desc: "Speed scripting and creative Python wizardry. Tackle algorithmic challenges, automation tasks, and data puzzles.", reward: "35 College Credits + Certificate", date: "SEP 18, 2026", time: "9:00 AM - 11:00 AM", venue: "Lab 204, IT Department" },
+      { id: "ai-model-clash", no: "04", track: "AIDS TRACK", type: "SQUAD", name: "AI MODEL CLASH", desc: "Train, fine-tune, and pitch predictive models on an unrevealed high-stakes dataset in a timed showdown.", reward: "45 College Credits + Trophy", date: "SEP 17, 2026", time: "10:00 AM - 1:00 PM", venue: "AIDS Studio" },
+      { id: "brick-bot-battle", no: "05", track: "ROBOTICS TRACK", type: "SQUAD", name: "BRICK BOT BATTLE", desc: "Engineer, construct, and pilot autonomous bots to conquer tactical obstacle baseplates and arena courses.", reward: "50 College Credits + Medals", date: "SEP 18, 2026", time: "10:00 AM - 2:00 PM", venue: "Main Arena" },
+      { id: "data-dig", no: "06", track: "AIDS TRACK", type: "SOLO", name: "DATA DIG", desc: "Exploratory analytics and insight extraction showdown where model precision and storytelling beat sheer chart count.", reward: "30 College Credits + Certificate", date: "SEP 18, 2026", time: "2:00 PM - 4:00 PM", venue: "AIDS Studio" },
+      { id: "prompt-forge", no: "07", track: "AIDS TRACK", type: "SOLO", name: "PROMPT FORGE", desc: "Craft system prompts, jailbreak guardrails, and solve intricate multi-modal puzzles on real LLM benchmarks.", reward: "25 College Credits + Certificate", date: "SEP 18, 2026", time: "4:30 PM - 6:30 PM", venue: "Innovation Lab" }
+    ];
+
+    function showNotice(message) {
+      notice.textContent = message;
+      notice.classList.add("show");
+      clearTimeout(noticeTimer);
+      noticeTimer = setTimeout(() => notice.classList.remove("show"), 2600);
+    }
+
+    function saveRegistered() { localStorage.setItem("converse-registered", JSON.stringify([...registered])); }
+    function go(view) {
+      location.hash = view === "home" ? "" : view;
+      render(view);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function publicNav() {
+      topbar.className = "topbar";
+      topbar.innerHTML = `<button class="button blue" data-view="about" type="button">[i] <span>About Us</span></button><button class="button yellow" data-view="login" type="button">Login <span class="arrow">&rarr;</span></button>`;
+      topbar.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", () => go(button.dataset.view)));
+    }
+
+    function authNav(view) {
+      const active = view.startsWith("event/") ? "events" : view;
+      topbar.className = "topbar auth-topbar";
+      topbar.innerHTML = `<button class="auth-logo" data-view="dashboard" type="button"><img src="${logo}" alt=""> <span>CONVERSE 2K26</span></button><button class="auth-link ${active === "dashboard" ? "active" : ""}" data-view="dashboard" type="button">Dashboard</button><button class="auth-link ${active === "events" ? "active" : ""}" data-view="events" type="button">Events</button><button class="auth-link ${active === "profile" ? "active" : ""}" data-view="profile" type="button">Profile</button>`;
+      topbar.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", () => go(button.dataset.view)));
+    }
+
+    function nav(view) {
+      const authView = view === "dashboard" || view === "events" || view === "profile" || view.startsWith("event/");
+      if (authenticated && authView) authNav(view);
+      else publicNav();
+    }
+
+    function home() {
+      app.innerHTML = `<section class="hero" aria-labelledby="home-title"><img class="logo" src="${logo}" alt="Converse 2k26 logo"><h1 id="home-title">CONVERSE 2K26</h1><p class="tagline">Where Technology Meets Creativity</p><div class="theme">BEYOND INTELLIGENCE / RESPONSIBLE USE OF AI</div></section><section class="stats" aria-label="Event highlights"><article class="stat blue"><h2>02 DAYS OF ACTION</h2><p>Non-stop building and battling</p></article><article class="stat yellow"><h2>500+ BUILDERS</h2><p>Master minds from across regions</p></article><article class="stat red"><h2>ETHICAL TECH</h2><p>AI for a responsible future</p></article></section><section aria-labelledby="sponsor-title"><h2 class="section-title" id="sponsor-title">POWERED BY OUR AMAZING SPONSORS</h2><div class="sponsors">${sponsors.map(([name, accent]) => `<button class="sponsor" style="--accent:${accent}" data-sponsor="${name}" type="button">${name}</button>`).join("")}</div></section>`;
+      app.querySelectorAll("[data-sponsor]").forEach(card => card.addEventListener("click", () => showNotice(`${card.dataset.sponsor} sponsor page is coming soon.`)));
+    }
+
+    function about() {
+      topbar.innerHTML = "";
+      app.innerHTML = `<div class="subpage-wrap"><button class="back" data-back type="button">&larr; &nbsp;Back to home</button><section class="panel about-panel"><img class="logo" src="${logo}" alt="Converse 2k26 logo"><h2>ABOUT US</h2><div class="yellow-rule"></div><p class="lead">DISCOVER THE MINDS BEHIND CONVERSE 2K26.</p><p>CONVERSE is the flagship technical festival of SCET, bringing together the brightest minds across departments to build, compete, and innovate.</p><p>Hosted collaboratively by the IT and AIDS departments, our mission is to foster a culture of responsible AI usage and technological excellence.</p><div class="connect"><h3>CONNECT WITH US</h3><div class="socials"><a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram &nearr;</a><a href="https://whatsapp.com" target="_blank" rel="noreferrer">WhatsApp &nearr;</a></div></div></section></div>`;
+      app.querySelector("[data-back]").addEventListener("click", () => go("home"));
+    }
+
+    function login() {
+      topbar.innerHTML = "";
+      app.innerHTML = `<div class="login-screen"><section class="login-card"><button class="back" data-back type="button">&larr; &nbsp;Back to home</button><img class="logo" src="${logo}" alt="Converse 2k26 logo"><div class="tech-label">TECH FEST</div><h2>CONVERSE 2K26</h2><p class="login-subtitle">The Brick Gateway</p><button class="button white google-button" id="google" type="button"><span class="google-mark">G</span>Continue as Malhar Balar</button><p class="login-hint">AUTHENTICATED BUILDER ACCESS</p></section></div>`;
+      app.querySelector("[data-back]").addEventListener("click", () => go("home"));
+      app.querySelector("#google").addEventListener("click", () => { authenticated = true; go("dashboard"); });
+    }
+
+    function authHeading(eyebrow, title, copy) { return `<header class="auth-heading"><span class="eyebrow">${eyebrow}</span><h1>${title}</h1><p>${copy}</p></header>`; }
+
+    function dashboard() {
+      const count = registered.size;
+      const preview = events.filter(event => event.track === "IT TRACK").slice(0, 2);
+      app.innerHTML = `<div class="auth-main">${authHeading("Master Builder Hub", "CONVERSE 2K26", "Where technology meets creativity. Explore challenges, register in a few clicks, and keep your schedule in one place.")}<div class="dashboard-grid"><section class="dashboard-hero"><img class="logo" src="${logo}" alt="Converse 2k26 logo"><h2>CONVERSE<br>2K26</h2><p class="hero-sub">WHERE TECHNOLOGY MEETS CREATIVITY</p><div class="badges"><span class="badge yellow">SCET TECH FEST · 26-27 APRIL 2K26</span><span class="badge blue">7 CHALLENGES</span><span class="badge red">FREE REGISTRATION</span></div><p class="panel-copy">Challenge yourself, compete with the best, build something amazing, and experience technology beyond the classroom.</p><div class="builder-chip"><span>Builder: ${profile.name}</span><strong>AIDS</strong></div><div class="dashboard-actions"><button class="button yellow" data-view="events" type="button">Explore Events &rarr;</button><button class="button blue" data-view="profile" type="button">View Profile</button></div></section><section class="dashboard-panel"><div class="progress-box"><div class="progress-line"><span>CONVERSE 2K26 · LIVE KICKOFF</span><span>${count}/7</span></div><div class="progress-dots">${events.map(event => `<i class="${registered.has(event.id) ? "filled" : ""}"></i>`).join("")}</div></div><h2>BUILD YOUR DAY.</h2><p class="panel-copy">7 high-octane challenges across IT and AIDS, squad and solo builds, and an instant digital pass for SCET delegates.</p><div class="track-tabs"><button class="track-tab active" data-track="IT TRACK" type="button">IT TRACK (4)</button><button class="track-tab" data-track="AIDS TRACK" type="button">AIDS TRACK (3)</button></div><div id="track-preview">${preview.map(event => `<div class="mini-event"><strong>${event.name}</strong><span>${event.reward}</span></div>`).join("")}</div><button class="button blue" data-view="events" type="button" style="width:100%;margin-top:16px">Snap in all 7 &rarr;</button></section></div><section class="feature-grid">${[["COMPETE", "High-stakes coding sprints, rapid quizzes, and algorithmic challenges."],["CREATE", "Architect resilient cloud systems and craft elegant software."],["COLLABORATE", "Form multi-disciplinary squads across AIDS, IT, CO, and engineering wings."],["CONQUER", "Win trophies, earn college credits, and gain recognition for your department."]].map(([title, copy]) => `<article class="feature-card"><h3>${title}</h3><p>${copy}</p><button class="back" data-view="events" type="button" style="margin:14px 0 0;color:var(--blue);font-size:10px">Discover more &rarr;</button></article>`).join("")}</section></div>`;
+      app.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", () => go(button.dataset.view)));
+      app.querySelectorAll("[data-track]").forEach(button => button.addEventListener("click", () => { app.querySelectorAll("[data-track]").forEach(item => item.classList.toggle("active", item === button)); const track = button.dataset.track; document.querySelector("#track-preview").innerHTML = events.filter(event => event.track === track).slice(0, 2).map(event => `<div class="mini-event"><strong>${event.name}</strong><span>${event.reward}</span></div>`).join(""); }));
+    }
+
+    function eventCard(event) {
+      return `<article class="event-card ${registered.has(event.id) ? "registered" : ""}" data-event="${event.id}"><div><div class="event-top"><span class="event-number">#${event.no}</span><span class="event-track">${event.track}</span><span class="event-type">${event.type}</span></div><h3>${event.name}</h3><p>${event.desc}</p><span class="reward">${event.reward}</span></div><div class="event-footer"><span>TAP FOR DETAILS</span><span>${registered.has(event.id) ? "REGISTERED" : "SNAP IN"} &rarr;</span></div></article>`;
+    }
+
+    function eventsView(filter = "ALL") {
+      const filtered = events.filter(event => filter === "ALL" || (filter === "TEAM EVENTS" ? event.type === "SQUAD" : filter === "SOLO EVENTS" ? event.type === "SOLO" : event.track === filter));
+      app.innerHTML = `<div class="auth-main">${authHeading("The Build Site", "SUB-EVENTS & CHALLENGES", "Browse and register for the available challenges. Choose your track and start building.")}<div class="progress-box"><div class="progress-line"><span>EVENT REGISTRATIONS</span><span>${registered.size} OF 7 JOINED</span></div><div class="progress-dots">${events.map(event => `<i class="${registered.has(event.id) ? "filled" : ""}"></i>`).join("")}</div></div><div class="filter-row">${["ALL", "IT TRACK", "AIDS TRACK", "TEAM EVENTS", "SOLO EVENTS"].map(item => `<button class="filter ${item === filter ? "active" : ""}" data-filter="${item}" type="button">${item}</button>`).join("")}</div><div class="events-list">${filtered.map(eventCard).join("")}</div></div>`;
+      app.querySelectorAll("[data-filter]").forEach(button => button.addEventListener("click", () => eventsView(button.dataset.filter)));
+      app.querySelectorAll("[data-event]").forEach(card => card.addEventListener("click", () => go(`event/${card.dataset.event}`)));
+    }
+
+    function eventDetail(id) {
+      const event = events.find(item => item.id === id) || events[0];
+      const isRegistered = registered.has(event.id);
+      app.innerHTML = `<section class="detail-card"><button class="back" data-back type="button">&larr; &nbsp;Back to events</button><img class="detail-logo" src="${logo}" alt="${event.name}"><span class="eyebrow">${event.track} · ${event.type}</span><h1>${event.name}</h1>${isRegistered ? `<div class="badge yellow" style="display:inline-block;margin-top:15px">REGISTERED FOR ${event.name}</div>` : ""}<div class="countdown"><div>09<small>DAYS</small></div><div>00<small>HRS</small></div><div>44<small>MIN</small></div><div>27<small>SEC</small></div></div><div class="detail-meta"><span>${event.date}</span><span>${event.time}</span><span>${event.venue}</span><span>${event.type}</span><span>${event.reward}</span></div><div class="detail-copy"><strong>ABOUT THE EVENT</strong><p>${event.desc}</p><strong>RULES & GUIDELINES</strong><p>Build responsibly, follow the event brief, and bring your best work to the judging panel.</p></div><div class="detail-actions"><button class="button ${isRegistered ? "blue" : "yellow"}" id="register" type="button">${isRegistered ? "Registered / Unregister" : "Register Now"}</button></div>${isRegistered ? `<p class="login-hint" style="margin-top:17px">ENTRY CODE · ${event.id === "it-quiz" ? "26V88M" : "BUILDER PASS"}</p>` : ""}</section>`;
+      app.querySelector("[data-back]").addEventListener("click", () => go("events"));
+      app.querySelector("#register").addEventListener("click", () => { if (registered.has(event.id)) registered.delete(event.id); else registered.add(event.id); saveRegistered(); render(`event/${event.id}`); });
+    }
+
+    function profileView() {
+      const count = registered.size;
+      const fields = editingProfile ? `<div class="profile-fields"><div class="profile-field"><label>BUILDER NAME</label><input id="profile-name" value="${profile.name}"></div><div class="profile-field"><label>COMM LINK (PHONE)</label><input id="profile-phone" value="${profile.phone}"></div><div class="profile-field"><label>SCET EMAIL</label><input id="profile-email" type="email" value="${profile.email}"></div><div class="dashboard-actions"><button class="button yellow" id="save-profile" type="button">Save Build</button><button class="button white" id="cancel-profile" type="button">Cancel</button></div></div>` : `<div class="profile-fields"><div class="profile-field"><label>BUILDER NAME</label><input value="${profile.name}" readonly></div><div class="profile-field"><label>COMM LINK</label><input value="${profile.phone}" readonly></div><div class="profile-field"><label>SCET UPLINK</label><input value="${profile.email}" readonly></div><button class="button yellow" id="edit-profile" type="button">Edit Details</button></div>`;
+      const manifest = [...registered].map(id => events.find(event => event.id === id)).filter(Boolean);
+      app.innerHTML = `<div class="auth-main">${authHeading("Builder ID", "BUILDER PROFILE", "Manage your builder identity, view your registered events, and check your status.")}<div class="profile-grid"><section class="profile-card"><div class="profile-head"><div class="avatar">${profile.name.charAt(0)}</div><div><h2>${profile.name}</h2><p>Verified Delegate · CONVERSE 2K26</p><span class="track-label">AIDS TRACK</span></div></div>${fields}</section><section class="manifest-card"><h2>ASSEMBLY MANIFEST</h2><p>Your registered builds for Converse 2k26.</p>${manifest.length ? manifest.map(event => `<div class="manifest-item"><span>STEP ${event.no}</span><strong>${event.name}</strong><button class="back" data-event="${event.id}" type="button" style="margin:0;color:var(--blue);font-size:10px">View &rarr;</button></div>`).join("") : `<div class="manifest-empty"><strong>MANIFEST EMPTY // 0 BRICKS ASSEMBLED</strong><span>Your assembly blueprint is blank. Select from 7 cutting-edge events on the Build Site to claim your spot on the baseplate.</span><button class="button blue" data-view="events" type="button" style="margin-top:17px">Snap in</button></div>`}</section></div><div class="dashboard-panel" style="margin-top:20px"><div class="progress-line"><span>BUILD PROGRESS</span><span>${count} / 7</span></div><div class="progress-dots">${events.map(event => `<i class="${registered.has(event.id) ? "filled" : ""}"></i>`).join("")}</div></div></div>`;
+      app.querySelector("#edit-profile")?.addEventListener("click", () => { editingProfile = true; render("profile"); });
+      app.querySelector("#cancel-profile")?.addEventListener("click", () => { editingProfile = false; render("profile"); });
+      app.querySelector("#save-profile")?.addEventListener("click", () => { profile = { name: app.querySelector("#profile-name").value, phone: app.querySelector("#profile-phone").value, email: app.querySelector("#profile-email").value }; localStorage.setItem(profileKey, JSON.stringify(profile)); editingProfile = false; render("profile"); showNotice("Builder details saved."); });
+      app.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", () => go(button.dataset.view)));
+      app.querySelectorAll("[data-event]").forEach(button => button.addEventListener("click", () => go(`event/${button.dataset.event}`)));
+    }
+
+    function render(view = location.hash.slice(1) || "dashboard") {
+      if (!authenticated && ["dashboard", "events", "profile"].includes(view)) view = "login";
+      nav(view);
+      if (view === "about") about();
+      else if (view === "login") login();
+      else if (view === "home") home();
+      else if (view === "dashboard") dashboard();
+      else if (view === "events") eventsView();
+      else if (view === "profile") profileView();
+      else if (view.startsWith("event/")) eventDetail(view.slice(6));
+      else dashboard();
+    }
+
+    window.addEventListener("hashchange", () => render(location.hash.slice(1) || "dashboard"));
+    render();
+  </script>
+</body>
+</html>

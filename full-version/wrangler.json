@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "tanstack-start-ts-desktop-comverse-2026-website",
+  "compatibility_date": "2024-09-23",
+  "workers_dev": false,
+  "routes": [
+    {
+      "pattern": "itaiconverse.in",
+      "custom_domain": true
+    }
+  ]
+}

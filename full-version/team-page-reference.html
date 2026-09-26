@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Builders — Team</title>
+<style>
+  :root{
+    --bg:#f5f6f8;
+    --ink:#111114;
+    --ink-dim:#5c5c66;
+    --ink-faint:#9494a0;
+    --red:#C91A09;
+    --yellow:#E8B800;
+    --blue:#0055BF;
+    --black:#1b1b1b;
+    --gray:#6b7280;
+    --ease:cubic-bezier(.2,.8,.3,1);
+    --pop:cubic-bezier(.34,1.56,.64,1);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:"Helvetica Neue", Arial, sans-serif;
+    color:var(--ink);
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  /* ================= HERO ================= */
+  .hero{
+    max-width:720px;
+    margin:0 auto;
+    padding:64px 24px 34px;
+    text-align:center;
+  }
+  .hero .eyebrow{
+    font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--ink-faint);
+    margin-bottom:14px;
+  }
+  .hero h1{
+    margin:0 0 16px;
+    font-size:clamp(28px, 5vw, 42px);
+    font-weight:800;
+    line-height:1.15;
+  }
+  .hero p{
+    margin:0 auto;
+    max-width:52ch;
+    font-size:15px;
+    line-height:1.6;
+    color:var(--ink-dim);
+  }
+  .brick-rule{
+    display:flex; justify-content:center; gap:6px;
+    margin:22px 0 0;
+  }
+  .brick-rule span{
+    width:26px; height:6px; border-radius:2px;
+  }
+
+  /* ================= SCROLLSPY NAV ================= */
+  .dept-nav{
+    position:sticky; top:0; z-index:50;
+    display:flex; justify-content:center;
+    padding:10px 16px;
+    background:rgba(245,246,248,.9);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(0,0,0,.06);
+  }
+  .dept-nav-inner{
+    position:relative;
+    display:flex; gap:4px;
+    max-width:100%;
+    overflow-x:auto;
+  }
+  .dept-nav-inner::-webkit-scrollbar{ display:none; }
+  .nav-indicator{
+    position:absolute; top:4px; bottom:4px; left:0;
+    border-radius:999px;
+    background:var(--ink);
+    transition:transform .3s var(--ease), width .3s var(--ease);
+    z-index:0;
+  }
+  .nav-pill{
+    position:relative; z-index:1;
+    display:flex; align-items:center; gap:6px;
+    padding:8px 14px;
+    font-size:12px; font-weight:700; letter-spacing:.03em;
+    color:var(--ink-dim);
+    background:none; border:none; cursor:pointer;
+    white-space:nowrap;
+    transition:color .25s ease;
+  }
+  .nav-pill.active{ color:#fff; }
+  .nav-pill .dot{ width:7px; height:7px; border-radius:50%; }
+
+  /* ================= DEPARTMENT = BRICK ================= */
+  .departments{
+    max-width:920px;
+    margin:0 auto;
+    padding:36px 20px 40px;
+    display:flex;
+    flex-direction:column;
+    gap:56px;
+  }
+
+  .dept{
+    position:relative;
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .6s var(--ease), transform .6s var(--ease);
+  }
+  .dept.in-view{ opacity:1; transform:translateY(0); }
+
+  .dept-label{
+    display:flex; align-items:baseline; gap:10px;
+    margin-bottom:0;
+    padding-left:4px;
+  }
+  .dept-label .dot{ width:9px; height:9px; border-radius:50%; background:var(--accent); }
+  .dept-label h2{
+    margin:0; font-size:13px; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--ink);
+  }
+  .dept-label .count{ font-size:12px; color:var(--ink-faint); }
+
+  /* the "brick" itself */
+  .brick{
+    position:relative;
+    margin-top:26px; /* room for studs to overlap upward */
+    background:var(--accent);
+    border-radius:14px;
+    padding:34px 18px 20px;
+  }
+  .brick.on-yellow .member .name{ color:#241d00; }
+  .brick.on-yellow .member .role{ color:rgba(36,29,0,.65); }
+
+  .stud-track{
+    display:flex;
+    gap:24px;
+    overflow-x:auto;
+    scroll-snap-type:x proximity;
+    padding:0 2px 4px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .stud-track::-webkit-scrollbar{ height:0; }
+
+  .member{
+    position:relative;
+    flex:0 0 auto;
+    width:86px;
+    scroll-snap-align:start;
+    text-align:center;
+    cursor:pointer;
+    background:none; border:none; padding:0; font:inherit; color:inherit;
+    opacity:0;
+    transform:scale(.5);
+    transition:opacity .35s var(--pop), transform .4s var(--pop);
+  }
+  .member.popped{ opacity:1; transform:scale(1); }
+
+  .stud-wrap{
+    position:relative;
+    top:-22px;
+    width:58px; height:58px;
+    margin:0 auto 4px;
+  }
+  .ping{
+    position:absolute; inset:0;
+    border-radius:50%;
+    border:2px solid #fff;
+    opacity:0;
+    pointer-events:none;
+  }
+  .ping.fire{ animation: pingOut .55s ease-out; }
+  @keyframes pingOut{
+    0%{ transform:scale(.7); opacity:.7; }
+    100%{ transform:scale(1.9); opacity:0; }
+  }
+
+  .stud{
+    position:relative;
+    width:100%; height:100%;
+    border-radius:50%;
+    background:#fff;
+    border:2.5px solid var(--accent-dark, rgba(0,0,0,.25));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:17px;
+    color:var(--accent);
+    overflow:hidden;
+    transition:transform .18s var(--ease), box-shadow .18s ease;
+  }
+  .stud img{
+    width:100%; height:100%; object-fit:cover;
+    filter:grayscale(70%) brightness(.96) saturate(.9);
+    transition:filter .4s ease;
+  }
+  .member:hover .stud img, .member:focus-visible .stud img{ filter:none; }
+  .member:hover .stud, .member:focus-visible .stud{
+    transform:translateY(-6px);
+    box-shadow:0 8px 16px rgba(0,0,0,.28);
+  }
+  .member:focus-visible .stud{ outline:2px solid #fff; outline-offset:2px; }
+
+  .name{
+    font-size:12.5px; font-weight:700; color:#fff;
+    line-height:1.3;
+  }
+  .role{
+    font-size:10.5px; color:rgba(255,255,255,.75);
+    line-height:1.3;
+  }
+
+  /* ================= PROFILE MODAL ================= */
+  .overlay{
+    position:fixed; inset:0; z-index:200;
+    background:rgba(10,10,14,.55);
+    display:flex; align-items:flex-end; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity .2s ease;
+  }
+  .overlay.open{ opacity:1; pointer-events:auto; }
+  .modal{
+    width:100%; max-width:420px;
+    background:#fff;
+    border-radius:18px 18px 0 0;
+    padding:26px 24px 30px;
+    transform:translateY(24px);
+    transition:transform .3s var(--ease);
+  }
+  .overlay.open .modal{ transform:translateY(0); }
+  .modal-top{ display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+  .modal-avatar{
+    width:64px; height:64px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:20px; color:#fff;
+    flex:0 0 auto; overflow:hidden;
+  }
+  .modal-avatar img{ width:100%; height:100%; object-fit:cover; }
+  .modal-name{ font-size:18px; font-weight:800; }
+  .modal-role{ font-size:12.5px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+  .modal-bio{ font-size:14px; line-height:1.6; color:var(--ink-dim); margin:0 0 14px; }
+  .modal-fact{
+    font-size:12.5px; color:var(--ink-dim);
+    background:var(--bg); border-radius:8px; padding:10px 12px; margin-bottom:18px;
+  }
+  .modal-fact strong{ color:var(--ink); }
+  .modal-socials{ display:flex; gap:10px; }
+  .modal-socials a{
+    width:38px; height:38px; border-radius:50%;
+    border:1.5px solid #e2e2e6;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink); text-decoration:none;
+  }
+  .modal-socials a:hover{ background:var(--bg); }
+  .modal-socials svg{ width:17px; height:17px; }
+  .modal-close{
+    position:absolute; top:14px; right:14px;
+    width:32px; height:32px; border-radius:50%;
+    background:var(--bg); border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* ================= CLOSING CTA ================= */
+  .closing{
+    max-width:640px; margin:0 auto;
+    padding:20px 24px 90px;
+    text-align:center;
+  }
+  .closing h3{ font-size:20px; font-weight:800; margin:0 0 8px; }
+  .closing p{ font-size:14px; color:var(--ink-dim); margin:0 0 22px; }
+  .join-btn{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--ink); color:#fff;
+    border:none; border-radius:10px;
+    padding:13px 24px;
+    font-size:14px; font-weight:700;
+    cursor:pointer;
+  }
+  .join-btn svg{ width:15px; height:15px; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="eyebrow">Meet the crew</div>
+  <h1>The builders behind every event</h1>
+  <p>None of this happens by accident. Every workshop, every stage, every late night before an event — it's this team piecing it together, brick by brick.</p>
+  <div class="brick-rule">
+    <span style="background:var(--red)"></span>
+    <span style="background:var(--yellow)"></span>
+    <span style="background:var(--blue)"></span>
+    <span style="background:var(--black)"></span>
+  </div>
+</div>
+
+<div class="dept-nav">
+  <div class="dept-nav-inner" id="deptNav">
+    <div class="nav-indicator" id="navIndicator"></div>
+  </div>
+</div>
+
+<div class="departments" id="departments"></div>
+
+<div class="closing">
+  <h3>Want to help build the next one?</h3>
+  <p>We're always looking for hands who care about doing things properly. No experience required — just show up.</p>
+  <button class="join-btn" type="button">
+    Join the crew
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+  </button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="modal-top">
+      <div class="modal-avatar" id="modalAvatar"></div>
+      <div>
+        <div class="modal-name" id="modalName"></div>
+        <div class="modal-role" id="modalRole"></div>
+      </div>
+    </div>
+    <p class="modal-bio" id="modalBio"></p>
+    <div class="modal-fact" id="modalFact"></div>
+    <div class="modal-socials" id="modalSocials"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var COLORS = {
+    red:{ hex:'#C91A09', dark:'#8f1206' },
+    yellow:{ hex:'#E8B800', dark:'#a98700' },
+    blue:{ hex:'#0055BF', dark:'#003b85' },
+    black:{ hex:'#1b1b1b', dark:'#000' },
+    gray:{ hex:'#6b7280', dark:'#4b5563' }
+  };
+
+  // Placeholder photos — swap `photo` for each member's real headshot URL.
+  var DEPARTMENTS = [
+    {
+      key:'leadership', name:'Leadership', color:'red',
+      members:[
+        { name:'Malhar Balar', role:'Lead Organizer', photo:'https://i.pravatar.cc/160?img=12', bio:'Keeps the whole event on schedule and makes the final call when things get tight.', fact:'Has run every event this club has hosted since 2023.', linkedin:'#', email:'malhar@example.com' },
+        { name:'Aditi Rao', role:'Co-Lead', photo:'https://i.pravatar.cc/160?img=47', bio:'Handles sponsor relations and the budget so the rest of the team can focus on execution.', fact:'Once negotiated a venue upgrade the week of the event.', linkedin:'#' }
+      ]
+    },
+    {
+      key:'tech', name:'Tech & Development', color:'blue',
+      members:[
+        { name:'Rohan Mehta', role:'Web Lead', photo:'https://i.pravatar.cc/160?img=33', bio:'Builds and maintains the registration site and the live dashboards used on event day.', fact:'Debugs best at 2am, apparently.', github:'#' },
+        { name:'Sneha Iyer', role:'Backend Engineer', photo:'https://i.pravatar.cc/160?img=45', bio:'Owns the registration pipeline and makes sure check-in never breaks under load.', fact:'Wrote the QR check-in system in a weekend.', github:'#', email:'sneha@example.com' },
+        { name:'Kabir Shah', role:'AV & Systems', photo:'https://i.pravatar.cc/160?img=15', bio:'Runs sound, streaming, and the on-stage tech so every session goes off without a hitch.', fact:'Owns more cables than clothes.', linkedin:'#' }
+      ]
+    },
+    {
+      key:'design', name:'Design & Branding', color:'yellow',
+      members:[
+        { name:'Meera Nair', role:'Design Lead', photo:'https://i.pravatar.cc/160?img=28', bio:'Designs everything from the posters to the on-site signage and this very website.', fact:'Redesigned the logo four times before settling on this one.', instagram:'#' },
+        { name:'Yash Kulkarni', role:'Motion Designer', photo:'https://i.pravatar.cc/160?img=52', bio:'Makes the intro animations and reels that go out before every event.', fact:'Can name every font on this page.', instagram:'#' }
+      ]
+    },
+    {
+      key:'ops', name:'Operations & Logistics', color:'black',
+      members:[
+        { name:'Priya Deshmukh', role:'Ops Lead', photo:'https://i.pravatar.cc/160?img=25', bio:'Handles venue bookings, vendor coordination, and the run-of-show timeline.', fact:'Has a backup plan for the backup plan.', linkedin:'#' },
+        { name:'Arjun Verma', role:'Logistics', photo:'https://i.pravatar.cc/160?img=51', bio:'Manages equipment, transport, and setup/teardown on event day.', fact:'Can set up a stage faster than anyone on the team.', email:'arjun@example.com' }
+      ]
+    },
+    {
+      key:'volunteers', name:'Volunteers', color:'gray',
+      members:[
+        { name:'Ishaan Kapoor', role:'Volunteer Coordinator', photo:'https://i.pravatar.cc/160?img=8', bio:'Trains and manages the volunteer team on the day of the event.', fact:'Remembers every volunteer\u2019s name by lunch.' },
+        { name:'Divya Menon', role:'Registration Desk', photo:'https://i.pravatar.cc/160?img=44', bio:'First face attendees see — runs check-in smoothly no matter the crowd.', fact:'Has checked in over 2,000 attendees across events.' },
+        { name:'Farhan Ali', role:'Crowd & Support', photo:'https://i.pravatar.cc/160?img=53', bio:'Keeps sessions running on time and helps attendees find their way.' }
+      ]
+    }
+  ];
+
+  var host = document.getElementById('departments');
+  var navHost = document.getElementById('deptNav');
+  var navIndicator = document.getElementById('navIndicator');
+
+  function initials(name){
+    return name.split(' ').map(function(p){ return p[0]; }).join('').slice(0,2).toUpperCase();
+  }
+
+  var deptSections = [];
+  var navPills = [];
+
+  DEPARTMENTS.forEach(function(dept, idx){
+    var c = COLORS[dept.color];
+
+    /* ---- nav pill ---- */
+    var pill = document.createElement('button');
+    pill.className = 'nav-pill';
+    pill.type = 'button';
+    pill.innerHTML = '<span class="dot" style="background:'+c.hex+'"></span>' + dept.name;
+    pill.addEventListener('click', function(){
+      document.getElementById('dept-'+dept.key).scrollIntoView({ behavior:'smooth', block:'start' });
+    });
+    navHost.appendChild(pill);
+    navPills.push(pill);
+
+    /* ---- department brick ---- */
+    var section = document.createElement('div');
+    section.className = 'dept';
+    section.id = 'dept-' + dept.key;
+    section.innerHTML =
+      '<div class="dept-label">' +
+        '<span class="dot" style="background:'+c.hex+'"></span>' +
+        '<h2>'+dept.name+'</h2>' +
+        '<span class="count">'+dept.members.length+' '+(dept.members.length===1?'person':'people')+'</span>' +
+      '</div>' +
+      '<div class="brick'+(dept.color==='yellow'?' on-yellow':'')+'" style="--accent:'+c.hex+'; --accent-dark:'+c.dark+'">' +
+        '<div class="stud-track"></div>' +
+      '</div>';
+
+    var track = section.querySelector('.stud-track');
+    dept.members.forEach(function(m){
+      var btn = document.createElement('button');
+      btn.className = 'member';
+      btn.type = 'button';
+      var photoHTML = m.photo
+        ? '<img src="'+m.photo+'" alt="" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';" />' +
+          '<span class="fallback" style="display:none; width:100%; height:100%; align-items:center; justify-content:center;">'+initials(m.name)+'</span>'
+        : initials(m.name);
+      btn.innerHTML =
+        '<span class="stud-wrap">' +
+          '<span class="ping"></span>' +
+          '<span class="stud">'+photoHTML+'</span>' +
+        '</span>' +
+        '<div class="name">'+m.name+'</div>' +
+        '<div class="role">'+m.role+'</div>';
+      btn.addEventListener('click', function(){
+        var ping = btn.querySelector('.ping');
+        ping.classList.remove('fire'); void ping.offsetWidth; ping.classList.add('fire');
+        openProfile(m, c);
+      });
+      track.appendChild(btn);
+    });
+
+    host.appendChild(section);
+    deptSections.push(section);
+  });
+
+  /* ---------------- scroll-triggered build-in ---------------- */
+  var deptObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        var members = entry.target.querySelectorAll('.member');
+        members.forEach(function(m, i){
+          setTimeout(function(){ m.classList.add('popped'); }, i * 70);
+        });
+        deptObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  deptSections.forEach(function(s){ deptObserver.observe(s); });
+
+  /* ---------------- scrollspy nav indicator ---------------- */
+  function setActivePill(idx){
+    navPills.forEach(function(p,i){ p.classList.toggle('active', i===idx); });
+    var p = navPills[idx];
+    navIndicator.style.width = p.offsetWidth + 'px';
+    navIndicator.style.transform = 'translateX(' + p.offsetLeft + 'px)';
+  }
+  setActivePill(0);
+
+  var spyObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting){
+        var idx = deptSections.indexOf(entry.target);
+        if (idx > -1) setActivePill(idx);
+      }
+    });
+  }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+  deptSections.forEach(function(s){ spyObserver.observe(s); });
+
+  /* ---------------- profile modal ---------------- */
+  var overlay = document.getElementById('overlay');
+  function openProfile(m, c){
+    var avatarEl = document.getElementById('modalAvatar');
+    avatarEl.style.background = c.hex;
+    avatarEl.innerHTML = m.photo
+      ? '<img src="'+m.photo+'" alt="" onerror="this.style.display=\'none\'; this.parentNode.textContent=\''+initials(m.name)+'\';" />'
+      : initials(m.name);
+
+    document.getElementById('modalName').textContent = m.name;
+    document.getElementById('modalRole').textContent = m.role;
+    document.getElementById('modalBio').textContent = m.bio || '';
+
+    var factEl = document.getElementById('modalFact');
+    if (m.fact){
+      factEl.style.display = 'block';
+      factEl.innerHTML = '<strong>Fun fact:</strong> ' + m.fact;
+    } else {
+      factEl.style.display = 'none';
+    }
+
+    var socials = document.getElementById('modalSocials');
+    socials.innerHTML = '';
+    var ICONS = {
+      linkedin:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm7 0h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.7c0-1.36-.02-3.1-1.9-3.1-1.9 0-2.2 1.48-2.2 3v5.8h-4V9Z"/></svg>',
+      instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>',
+      github:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.6 2 12.2c0 4.5 2.9 8.3 6.9 9.6.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.4-3.4-1.4-.5-1.1-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.4.1-2.8 0 0 .8-.3 2.7 1 .8-.2 1.6-.3 2.5-.3s1.7.1 2.5.3c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.5.1 2.8.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 5 .4.3.7 1 .7 2v3c0 .3.2.6.7.5C19.1 20.5 22 16.7 22 12.2 22 6.6 17.5 2 12 2Z"/></svg>',
+      email:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>'
+    };
+    ['linkedin','instagram','github','email'].forEach(function(key){
+      if (!m[key]) return;
+      var a = document.createElement('a');
+      var href = m[key];
+      if (key === 'email') href = 'mailto:' + href;
+      a.href = href;
+      a.target = key === 'email' ? '_self' : '_blank';
+      a.rel = 'noopener noreferrer';
+      a.setAttribute('aria-label', key);
+      a.innerHTML = ICONS[key];
+      socials.appendChild(a);
+    });
+
+    overlay.classList.add('open');
+  }
+  document.getElementById('modalClose').addEventListener('click', function(){
+    overlay.classList.remove('open');
+  });
+  overlay.addEventListener('click', function(e){
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+
+  window.addEventListener('resize', function(){
+    var activeIdx = navPills.findIndex(function(p){ return p.classList.contains('active'); });
+    if (activeIdx > -1) setActivePill(activeIdx);
+  });
+})();
+</script>
+</body>
+</html>

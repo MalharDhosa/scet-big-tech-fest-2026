@@ -1,0 +1,528 @@
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Lexend:wght@300;400;500;600;700&display=swap");
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --color-canvas: var(--bg-canvas);
+  --color-brick-blue-deep: var(--brick-blue-deep);
+  --color-royal-blue: #003399;
+  --color-brick-yellow: var(--brick-yellow);
+  --color-brick-red: var(--brick-red);
+  --color-brick-blue: var(--brick-blue);
+  --color-brick-black: var(--brick-black);
+  --color-brick-white: var(--brick-white);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --font-display: "Chakra Petch", system-ui, sans-serif;
+  --font-body: "Lexend", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+:root {
+  --bg-canvas: #e7e7ea;
+  --brick-blue-deep: #003399;
+  --brick-yellow: #ffd700;
+  --brick-red: #c91a09;
+  --brick-blue: #0055bf;
+  --brick-black: #0d0d0d;
+  --brick-white: #ffffff;
+
+  --radius: 5px;
+  --background: var(--bg-canvas);
+  --foreground: var(--brick-black);
+  --card: #ffffff;
+  --card-foreground: var(--brick-black);
+  --popover: #ffffff;
+  --popover-foreground: var(--brick-black);
+  --primary: var(--brick-yellow);
+  --primary-foreground: var(--brick-black);
+  --secondary: var(--brick-blue);
+  --secondary-foreground: #ffffff;
+  --muted: #d7d7dc;
+  --muted-foreground: #55555f;
+  --accent: var(--brick-red);
+  --accent-foreground: #ffffff;
+  --destructive: var(--brick-red);
+  --destructive-foreground: #ffffff;
+  --border: var(--brick-black);
+  --input: #cfcfd6;
+  --ring: var(--brick-yellow);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--bg-canvas);
+    color: var(--brick-black);
+    font-family: var(--font-body);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+}
+
+/* ---------- Motion language: snap, lift, press ---------- */
+
+@keyframes brick-snap {
+  0% {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(4px);
+  }
+  80% {
+    transform: translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes brick-snap-hero {
+  0% {
+    opacity: 0;
+    transform: translateY(-70px) scale(1.04);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(10px) scale(0.995);
+  }
+  82% {
+    transform: translateY(-4px) scale(1.002);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes brick-rattle {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-10px);
+  }
+  30% {
+    transform: translateX(9px);
+  }
+  45% {
+    transform: translateX(-7px);
+  }
+  60% {
+    transform: translateX(5px);
+  }
+  80% {
+    transform: translateX(-2px);
+  }
+}
+
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes holo-sweep {
+  0% {
+    transform: translateX(-130%) skewX(-18deg);
+  }
+  100% {
+    transform: translateX(230%) skewX(-18deg);
+  }
+}
+
+@keyframes brick-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--piece-rot, 0deg));
+  }
+  50% {
+    transform: translate3d(0, -12px, 0) rotate(calc(var(--piece-rot, 0deg) + 3deg));
+  }
+}
+
+@keyframes stud-fall {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--dx, 0px), var(--dy, 400px), 0) scale(0.6);
+  }
+}
+
+@keyframes toast-drop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -30px);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, 6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@utility snap-in {
+  animation: brick-snap 380ms cubic-bezier(0.22, 1.4, 0.36, 1) both;
+}
+
+@utility snap-in-hero {
+  animation: brick-snap-hero 620ms cubic-bezier(0.2, 1.3, 0.3, 1) both;
+}
+
+@utility rattle {
+  animation: brick-rattle 420ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@utility brick-bevel {
+  box-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.32),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.22),
+    6px 6px 0 rgba(13, 13, 13, 0.85);
+}
+
+@utility brick-bevel-sm {
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.22),
+    4px 4px 0 rgba(13, 13, 13, 0.85);
+}
+
+@utility slot-inset {
+  box-shadow:
+    inset 0 3px 6px rgba(0, 0, 0, 0.45),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.14);
+}
+
+/* ---------- Plastic Click Button & Loader ---------- */
+
+@keyframes brick-isometric-snap {
+  0% {
+    opacity: 0;
+    transform: translateY(-28px) rotate(-16deg) scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-6px) rotate(-6deg) scale(1.02);
+  }
+  75% {
+    transform: translateY(2px) rotate(0deg) scale(1.04);
+  }
+  90% {
+    transform: translateY(-1px) rotate(0deg) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes baseplate-stud-pop {
+  0%, 100% {
+    transform: scale(1);
+  }
+  75% {
+    transform: scale(1.06);
+  }
+}
+
+.brick-snap-loader {
+  animation: brick-isometric-snap 1100ms cubic-bezier(0.2, 1.4, 0.35, 1) infinite;
+}
+
+.baseplate-stud-pulse {
+  animation: baseplate-stud-pop 1100ms ease-in-out infinite;
+}
+
+/* ---------- 3D Hero Logo Float & Levitation ---------- */
+@keyframes brick-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1.5deg);
+  }
+}
+
+.animate-float {
+  animation: brick-float 3.6s ease-in-out infinite;
+}
+
+/* ---------- Card Tactile Hover Pop & Stud Glow ---------- */
+.brick-card-interactive {
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.4, 1), box-shadow 220ms ease;
+}
+
+.brick-card-interactive:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.22),
+    8px 8px 0 #0D0D0D !important;
+}
+
+/* ---------- Button Shimmer Sweep ---------- */
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.shimmer-on-hover:hover::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  animation: shimmer-sweep 850ms ease-in-out forwards;
+  pointer-events: none;
+}
+
+/* ---------- Scroll Reveal Animations ---------- */
+@keyframes scroll-snap-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.scroll-reveal {
+  animation: scroll-snap-in 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ============================================================
+   SPONSOR SECTION — animated brick-accented cards
+   ============================================================ */
+.sponsors-section {
+  position: relative;
+  overflow: hidden;
+  padding: 48px 16px 64px;
+}
+@media (min-width: 768px) {
+  .sponsors-section {
+    padding: 80px 24px 100px;
+  }
+}
+
+/* subtle floating brick shapes in background */
+.float-brick {
+  position: absolute;
+  width: 34px;
+  height: 14px;
+  border-radius: 3px;
+  opacity: 0.14;
+  will-change: transform;
+  animation: sponsor-drift 16s ease-in-out infinite;
+}
+@keyframes sponsor-drift {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--r, 0deg)); }
+  50% { transform: translate3d(var(--dx, 14px), var(--dy, -10px), 0) rotate(var(--r, 0deg)); }
+}
+
+.sponsors-head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 52px;
+  flex-wrap: wrap;
+}
+.sponsors-head .s-line { width: 48px; height: 2px; background: #d7d7dc; }
+.sponsors-head h2 {
+  margin: 0;
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sponsor-grid {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ---- Individual sponsor card ---- */
+.sponsor-card {
+  --ease: cubic-bezier(.2, .8, .3, 1);
+  position: relative;
+  width: 250px;
+  max-width: calc(100vw - 32px);
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1.5px solid #1b1b1b;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #111114;
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease),
+              box-shadow 0.2s ease, border-color 0.2s ease;
+  will-change: transform, opacity;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 32px 18px 28px;
+  gap: 6px;
+}
+.sponsor-card.in-view {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* colored accent bar at top */
+.sponsor-card .sp-accent-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 10px 10px 0 0;
+}
+
+/* two small studs, top-left (below the bar) */
+.sponsor-card .sp-studs {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 6px;
+}
+.sponsor-card .sp-studs span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent, #C91A09);
+}
+
+.sponsor-card .sp-name {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-align: center;
+}
+
+.sponsor-card .sp-desc {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b6b74;
+  text-align: center;
+  line-height: 1.4;
+  max-width: 200px;
+}
+
+.sponsor-card .sp-visit {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #6b6b74;
+  opacity: 0;
+  transform: translate3d(0, 4px, 0);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.sponsor-card:hover .sp-visit {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.sponsor-card:hover {
+  transform: translate3d(0, -4px, 0);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent, #C91A09);
+}
+
+.sponsor-card:active {
+  transform: translate3d(0, -1px, 0) scale(0.98);
+}
+
+.sponsor-card:focus-visible {
+  outline: 2px solid #0055BF;
+  outline-offset: 3px;
+}
+
+/* Hide scrollbar completely across Chrome, Safari, Firefox, Edge */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  -webkit-appearance: none !important;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}

@@ -1,0 +1,75 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users Collection
+    match /users/{uid} {
+      // Anyone logged in can read user data
+      allow read: if request.auth != null;
+      // Users can write to their own doc BUT cannot change their role field
+      // Master admins can write anything
+      allow write: if request.auth != null && (
+        (request.auth.uid == uid && (
+          // New user creation (no existing doc) — role cannot be set to master/admin
+          !exists(/databases/$(database)/documents/users/$(uid)) && 
+          !(request.resource.data.role in ["master", "admin", "sub-admin"])
+        ||
+          // Existing user update — role field must not change
+          exists(/databases/$(database)/documents/users/$(uid)) &&
+          (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']))
+        )) || 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "master"
+      );
+    }
+    
+    // Events Collection
+    match /events/{eventId} {
+      // Anyone can read events
+      allow read: if true;
+      // Only master admins can modify events
+      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "master";
+    }
+    
+    // Registrations Collection
+    match /registrations/{regId} {
+      // Authenticated users can read
+      allow read: if request.auth != null;
+      // Only allow create if the userId in the document matches the authenticated user's UID, OR if the user is a master admin
+      allow create: if request.auth != null && (
+        request.resource.data.userId == request.auth.uid ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "master"
+      );
+      // Master or sub-admins can update registrations (for check-ins)
+      allow update: if request.auth != null && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "master" ||
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "sub-admin" &&
+         resource.data.eventId == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.assignedEventId)
+      );
+      // Master admins or the registering user can delete registrations
+      allow delete: if request.auth != null && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "master" ||
+        resource.data.userId == request.auth.uid
+      );
+    }
+    
+    // Site Config Collection
+    match /siteConfig/{docId} {
+      // Anyone can read site config
+      allow read: if true;
+      // Only master admins can edit site config
+      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "master";
+    }
+
+    // Mail Collection (used by email system) — no client writes allowed
+    match /mail/{mailId} {
+      allow read: if false;
+      allow write: if false;
+    }
+
+    // Email Progress Collection — admins can read for progress tracking, server writes only
+    match /emailProgress/{campaignId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+  }
+}
