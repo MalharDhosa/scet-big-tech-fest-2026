@@ -1,5 +1,9 @@
 # CONVERSE 2K26 — Event Management Platform
 
+
+hey i am krish
+
+
 Official platform built for **CONVERSE 2K26**, the flagship annual tech fest organized by the IT Department of **Sarvajanik College of Engineering & Technology (SCET), Surat**.
 
 > 🏗️ Themed around LEGO bricks — every button, card, and animation feels like snapping together precision-engineered building blocks.
